@@ -14,16 +14,22 @@
 ActiveRecord::Schema.define(version: 20141025182349) do
 
   create_table "arcs", force: true do |t|
+    t.integer  "flow"
+    t.integer  "initial_flow"
+    t.integer  "head_id"
+    t.integer  "tail_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "nodes", force: true do |t|
+    t.integer  "number"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "paths", force: true do |t|
+    t.integer  "max_flow"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
