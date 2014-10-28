@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141028171648) do
+ActiveRecord::Schema.define(version: 20141028200233) do
 
   create_table "arcs", force: true do |t|
     t.integer  "flow"
@@ -20,6 +20,11 @@ ActiveRecord::Schema.define(version: 20141028171648) do
     t.integer  "tail_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "arcs_paths", id: false, force: true do |t|
+    t.integer "path_id"
+    t.integer "arc_id"
   end
 
   create_table "nodes", force: true do |t|
