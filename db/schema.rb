@@ -22,18 +22,18 @@ ActiveRecord::Schema.define(version: 20141028221049) do
     t.datetime "updated_at"
   end
 
-  add_index "arcs", ["flow"], name: "index_arcs_on_flow"
-  add_index "arcs", ["head_id"], name: "index_arcs_on_head_id"
-  add_index "arcs", ["id"], name: "index_arcs_on_id"
-  add_index "arcs", ["tail_id"], name: "index_arcs_on_tail_id"
+  add_index "arcs", ["flow"], name: "index_arcs_on_flow", using: :btree
+  add_index "arcs", ["head_id"], name: "index_arcs_on_head_id", using: :btree
+  add_index "arcs", ["id"], name: "index_arcs_on_id", using: :btree
+  add_index "arcs", ["tail_id"], name: "index_arcs_on_tail_id", using: :btree
 
   create_table "arcs_paths", id: false, force: true do |t|
     t.integer "path_id"
     t.integer "arc_id"
   end
 
-  add_index "arcs_paths", ["arc_id"], name: "index_arcs_paths_on_arc_id"
-  add_index "arcs_paths", ["path_id"], name: "index_arcs_paths_on_path_id"
+  add_index "arcs_paths", ["arc_id"], name: "index_arcs_paths_on_arc_id", using: :btree
+  add_index "arcs_paths", ["path_id"], name: "index_arcs_paths_on_path_id", using: :btree
 
   create_table "nodes", force: true do |t|
     t.integer  "number"
@@ -41,16 +41,16 @@ ActiveRecord::Schema.define(version: 20141028221049) do
     t.datetime "updated_at"
   end
 
-  add_index "nodes", ["id"], name: "index_nodes_on_id"
-  add_index "nodes", ["number"], name: "index_nodes_on_number"
+  add_index "nodes", ["id"], name: "index_nodes_on_id", using: :btree
+  add_index "nodes", ["number"], name: "index_nodes_on_number", using: :btree
 
   create_table "nodes_paths", id: false, force: true do |t|
     t.integer "path_id"
     t.integer "node_id"
   end
 
-  add_index "nodes_paths", ["node_id"], name: "index_nodes_paths_on_node_id"
-  add_index "nodes_paths", ["path_id"], name: "index_nodes_paths_on_path_id"
+  add_index "nodes_paths", ["node_id"], name: "index_nodes_paths_on_node_id", using: :btree
+  add_index "nodes_paths", ["path_id"], name: "index_nodes_paths_on_path_id", using: :btree
 
   create_table "paths", force: true do |t|
     t.integer  "max_flow"
@@ -58,7 +58,7 @@ ActiveRecord::Schema.define(version: 20141028221049) do
     t.datetime "updated_at"
   end
 
-  add_index "paths", ["id"], name: "index_paths_on_id"
-  add_index "paths", ["max_flow"], name: "index_paths_on_max_flow"
+  add_index "paths", ["id"], name: "index_paths_on_id", using: :btree
+  add_index "paths", ["max_flow"], name: "index_paths_on_max_flow", using: :btree
 
 end
