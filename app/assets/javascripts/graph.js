@@ -1,4 +1,4 @@
-$(".myObject")
+var NS = {};
 
 $(function(){
 
@@ -23,8 +23,8 @@ $(function(){
   ],
   lastNodeId = 2,
   links = [
-    {source: nodes[0], target: nodes[1], left: false, right: true },
-    {source: nodes[1], target: nodes[2], left: false, right: true }
+    {source: nodes[0], target: nodes[1], left: false, right: true, flow: 0 },
+    {source: nodes[1], target: nodes[2], left: false, right: true, flow: 0 }
   ];
 
   // init D3 force layout
@@ -363,6 +363,17 @@ $(function(){
         .on('touchstart.drag', null);
       svg.classed('ctrl', false);
     }
+  }
+
+  NS.serialize = function serialize() {
+    $.ajax({
+      type: "POST",
+      url: "/serialize",
+      data: {
+        nodes: nodes,
+        links: links
+      }
+    });
   }
 
   // app starts here

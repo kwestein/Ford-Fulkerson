@@ -1,8 +1,31 @@
 class GraphController < ApplicationController
 	def index
 	 	@total_max_flow = 0
+	end
 
-	 	arcs = Arc.all
+	def serialize
+		render :nothing => true, :status => :ok
+		Node.destroy_all
+		Path.destroy_all
+		Arc.destroy_all
+
+		nodes = params[:nodes]
+		arcs = params[:links]
+		nodes.each do |node|
+			Node.create(number: node.last["id"])
+		end
+		arcs.each do |arc|
+			puts "!!!!!#{arc.last}"
+			head = Node.where(number: arc.last["source"]["id"]).first
+			tail = Node.where(number: arc.last["target"]["id"]).first
+			Arc.create(flow: arc.last["flow"], initial_flow: arc.last["flow"], head_id: head.id, tail_id: tail.id)
+		end
+
+		run_algorithm
+	end
+
+	def run_algorithm
+		arcs = Arc.all
 	 	arcs.each do |arc|
 			arc.update_attributes(flow: arc.initial_flow)
 		end
@@ -44,26 +67,28 @@ class GraphController < ApplicationController
 		subpaths[1] = [1]
 		paths = Hash.new
 
-		sink = Node.last.number
+		if (Node.count > 0)
+			sink = Node.last.number
 
-		i = 1
-		while i <= subpaths.length do
-			last_node = subpaths[i].last
-			if last_node == sink
-				paths[paths.length + 1] = subpaths[i]
-  			else
-  				tail = Node.where('number = ?', last_node).first
-  				if tail
-  					arcs = Arc.where(tail_id: tail.id)
-  					arcs.each do |arc|
-  						unless subpaths[i].include?(arc.head.number)
-  							new_path = subpaths[i] + [arc.head.number]
-  							subpaths[subpaths.length + 1] = new_path
-  						end
-  					end
-  				end
-  			end
-  			i += 1
+			i = 1
+			while i <= subpaths.length do
+				last_node = subpaths[i].last
+				if last_node == sink
+					paths[paths.length + 1] = subpaths[i]
+	  			else
+	  				tail = Node.where('number = ?', last_node).first
+	  				if tail
+	  					arcs = Arc.where(tail_id: tail.id)
+	  					arcs.each do |arc|
+	  						unless subpaths[i].include?(arc.head.number)
+	  							new_path = subpaths[i] + [arc.head.number]
+	  							subpaths[subpaths.length + 1] = new_path
+	  						end
+	  					end
+	  				end
+	  			end
+	  			i += 1
+			end
 		end
 		return paths
 	end
