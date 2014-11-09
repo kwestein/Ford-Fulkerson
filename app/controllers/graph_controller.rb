@@ -13,7 +13,7 @@ class GraphController < ApplicationController
 
 		done = false
 		selected_paths = []
-		while !done
+		while !paths.empty? && !done
 			max_flow = Path.maximum(:max_flow)
 			if max_flow > 0
 				selected_path = Path.where(max_flow: max_flow).first
