@@ -1,5 +1,4 @@
 class GraphController < ApplicationController
-	#TODO: add indices
 	def index
 	 	@total_max_flow = 0
 
