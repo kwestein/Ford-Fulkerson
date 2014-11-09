@@ -1,17 +1,17 @@
 development:
-  adapter: mysql2
+  adapter: mysql
   database: ford_development
   username: root
   password:
   host: localhost
 test:
-  adapter: mysql2
+  adapter: mysql
   database: ford_test
   username: root
   password:
   host: localhost
 production:
-  adapter: mysql2
+  adapter: mysql
   database: ford_production
   username: root
   password: 
