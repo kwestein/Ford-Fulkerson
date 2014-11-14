@@ -1,6 +1,5 @@
 class GraphController < ApplicationController
 	def index
-	 	@total_max_flow = 0
 	end
 
 	def serialize
@@ -15,16 +14,18 @@ class GraphController < ApplicationController
 			Node.create(number: node.last["id"])
 		end
 		arcs.each do |arc|
-			puts "!!!!!#{arc.last}"
 			head = Node.where(number: arc.last["source"]["id"]).first
 			tail = Node.where(number: arc.last["target"]["id"]).first
 			Arc.create(flow: arc.last["flow"], initial_flow: arc.last["flow"], head_id: head.id, tail_id: tail.id)
+			Arc.create(flow: arc.last["flow"], initial_flow: arc.last["flow"], head_id: tail.id, tail_id: head.id)
 		end
 
 		run_algorithm
 	end
 
 	def run_algorithm
+		@total_max_flow = 0
+
 		arcs = Arc.all
 	 	arcs.each do |arc|
 			arc.update_attributes(flow: arc.initial_flow)
@@ -36,6 +37,7 @@ class GraphController < ApplicationController
 
 		done = false
 		selected_paths = []
+
 		while !paths.empty? && !done
 			max_flow = Path.maximum(:max_flow)
 			if max_flow > 0
@@ -64,7 +66,7 @@ class GraphController < ApplicationController
 
 	def find_all_paths
 		subpaths = Hash.new
-		subpaths[1] = [1]
+		subpaths[1] = [0]
 		paths = Hash.new
 
 		if (Node.count > 0)
