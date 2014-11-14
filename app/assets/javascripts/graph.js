@@ -23,8 +23,8 @@ $(function(){
   ],
   lastNodeId = 2,
   links = [
-    {source: nodes[0], target: nodes[1], left: true, right: true, flow: Math.round(10 * Math.random()) },
-    {source: nodes[1], target: nodes[2], left: true, right: true, flow: Math.round(10 * Math.random()) }
+    {source: nodes[0], target: nodes[1], left: true, right: true, flow: Math.round(9 * Math.random()) }, //TODO: 0 to 9 inclusive?
+    {source: nodes[1], target: nodes[2], left: true, right: true, flow: Math.round(9 * Math.random()) }
   ];
 
   // init D3 force layout
@@ -318,30 +318,64 @@ $(function(){
         selected_node = null;
         restart();
         break;
-      case 66: // B
+      // When numeric values are entered, set the flow
+      case 48: // 0
         if(selected_link) {
-          // set link direction to both left and right
-          selected_link.left = true;
-          selected_link.right = true;
+          selected_link.flow = 0;
         }
         restart();
         break;
-      case 76: // L
+      case 49: // 1
         if(selected_link) {
-          // set link direction to left only
-          selected_link.left = true;
-          selected_link.right = false;
+          selected_link.flow = 1;
         }
         restart();
         break;
-      case 82: // R
-        if(selected_node) {
-          // toggle node reflexivity
-          selected_node.reflexive = !selected_node.reflexive;
-        } else if(selected_link) {
-          // set link direction to right only
-          selected_link.left = false;
-          selected_link.right = true;
+      case 50: // 2
+        if(selected_link) {
+          selected_link.flow = 2;
+        }
+        restart();
+        break;
+      case 51: // 3
+        if(selected_link) {
+          selected_link.flow = 3;
+        }
+        restart();
+        break;
+        case 49: // 4
+        if(selected_link) {
+          selected_link.flow = 4;
+        }
+        restart();
+        break;
+      case 50: // 5
+        if(selected_link) {
+          selected_link.flow = 5;
+        }
+        restart();
+        break;
+      case 51: // 6
+        if(selected_link) {
+          selected_link.flow = 6;
+        }
+        restart();
+        break;
+        case 49: // 7
+        if(selected_link) {
+          selected_link.flow = 7;
+        }
+        restart();
+        break;
+      case 50: // 8
+        if(selected_link) {
+          selected_link.flow = 8;
+        }
+        restart();
+        break;
+      case 51: // 9
+        if(selected_link) {
+          selected_link.flow = 9;
         }
         restart();
         break;
