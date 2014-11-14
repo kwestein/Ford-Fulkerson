@@ -343,37 +343,37 @@ $(function(){
         }
         restart();
         break;
-        case 49: // 4
+      case 52: // 4
         if(selected_link) {
           selected_link.flow = 4;
         }
         restart();
         break;
-      case 50: // 5
+      case 53: // 5
         if(selected_link) {
           selected_link.flow = 5;
         }
         restart();
         break;
-      case 51: // 6
+      case 54: // 6
         if(selected_link) {
           selected_link.flow = 6;
         }
         restart();
         break;
-        case 49: // 7
+        case 55: // 7
         if(selected_link) {
           selected_link.flow = 7;
         }
         restart();
         break;
-      case 50: // 8
+      case 56: // 8
         if(selected_link) {
           selected_link.flow = 8;
         }
         restart();
         break;
-      case 51: // 9
+      case 57: // 9
         if(selected_link) {
           selected_link.flow = 9;
         }
