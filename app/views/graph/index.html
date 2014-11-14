@@ -3,18 +3,23 @@
 <title>Directed Graph Editor</title>
 </head>
 
-<body>
-  <h2>Ford-Fulkerson Max Flow/Min Cut Algorithm</h2>
-  <a href="http://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm" id="la">More info</a>
-  <p>Max flow: <%= @total_max_flow %></p>
-  <button type="button" onclick="NS.serialize()">Start</button>
-  <h4>Instructions:</h4>
-  <ul>
-  <li>Click in the open space to <strong>add a node</strong>, drag from one node to another to <strong>add an edge</strong></li>
-  <li>Ctrl-drag a node to move the graph layout</li>
-  <li>Click a node or an edge to select it</li>
-  <li>When a node is selected: R toggles reflexivity, Delete removes the node</li>
-  <li>When an edge is selected: L(eft), R(ight), B(oth) change direction, Delete removes the edge</li>
-</ul>
-  <div></div>
+<body style="margin:0% 10%;">
+  <div style="background-color:#D8D8D8; padding:3% 10%">
+    <h2 style="margin:auto;font-family: Helvetica Neue, Helvetica, sans-serif;font-size: 3.2em;font-weight: 300;letter-spacing: -2px;">Ford-Fulkerson Max Flow/Min Cut Algorithm</h2>
+    <p style="margin:15px 0px 5px 0px; position: relative; left: 48%; margin-right: -50%;"><a href="http://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm">More info</a></p>
+    <p style="margin:0px 0px 10px 0px; position: relative; left: 49%; margin-right: -50%;"><button type="button" onclick="NS.serialize()" style="margin-bottom:10px;">Start</button></p>
+    <div style="padding:0% 10%;">
+      <div class="network"></div>
+      <h4>Instructions:</h4>
+      <ul>
+        <li>Click in the open space to <strong>add a node</strong>, drag from one node to another to <strong>add an edge</strong></li>
+        <li>Ctrl-drag a node to move the graph layout</li>
+        <li>Click a node or an edge to select it</li>
+        <li>When a node is selected: R toggles reflexivity, Delete removes the node</li>
+        <li>When an edge is selected: L(eft), R(ight), B(oth) change direction, Delete removes the edge</li>
+        <li>Each arc is automatically assigned a random number between 1 and 10 as a maximum flow value</li>
+        <li>To assign an arc a new max flow value, select it, type the flow, then press enter</li>
+      </ul>
+    </div>
+  </div>
 </body>

@@ -3,13 +3,13 @@ var NS = {};
 $(function(){
 
   // set up SVG for D3
-  var width  = 960,
-      height = 500,
+  var width  = 700,
+      height = 300,
       colors = d3.scale.category10();
 
-  var svg = d3.select('div')
+  var svg = d3.select('.network')
       .append('svg')
-      .attr('width', width)
+      .attr('width', '100%')
       .attr('height', height);
 
   // set up initial nodes and links
@@ -17,14 +17,14 @@ $(function(){
   //  - reflexive edges are indicated on the node (as a bold black circle).
   //  - links are always source < target; edge directions are set by 'left' and 'right'.
   var nodes = [
-    {id: 0, reflexive: false},
+    {id: 0, reflexive: true},
     {id: 1, reflexive: true },
-    {id: 2, reflexive: false}
+    {id: 2, reflexive: true}
   ],
   lastNodeId = 2,
   links = [
-    {source: nodes[0], target: nodes[1], left: false, right: true, flow: 0 },
-    {source: nodes[1], target: nodes[2], left: false, right: true, flow: 0 }
+    {source: nodes[0], target: nodes[1], left: true, right: true, flow: Math.round(10 * Math.random()) },
+    {source: nodes[1], target: nodes[2], left: true, right: true, flow: Math.round(10 * Math.random()) }
   ];
 
   // init D3 force layout
@@ -198,15 +198,13 @@ $(function(){
 
         // add link to graph (update if exists)
         // NB: links are strictly source < target; arrows separately specified by booleans
-        var source, target, direction;
+        var source, target;
         if(mousedown_node.id < mouseup_node.id) {
           source = mousedown_node;
           target = mouseup_node;
-          direction = 'right';
         } else {
           source = mouseup_node;
           target = mousedown_node;
-          direction = 'left';
         }
 
         var link;
@@ -214,11 +212,8 @@ $(function(){
           return (l.source === source && l.target === target);
         })[0];
 
-        if(link) {
-          link[direction] = true;
-        } else {
-          link = {source: source, target: target, left: false, right: false};
-          link[direction] = true;
+        if(!link) {
+          link = {source: source, target: target, left: true, right: true, flow: Math.round(10 * Math.random())};
           links.push(link);
         }
 
