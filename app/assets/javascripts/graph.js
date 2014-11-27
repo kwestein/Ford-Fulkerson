@@ -17,14 +17,14 @@ $(function(){
   //  - reflexive edges are indicated on the node (as a bold black circle).
   //  - links are always source < target; edge directions are set by 'left' and 'right'.
   var nodes = [
-    {id: 0, reflexive: true},
-    {id: 1, reflexive: true },
-    {id: 2, reflexive: true}
+    {id: 0, reflexive: true, visited: false, pre: null, child_ids:[1]},
+    {id: 1, reflexive: true, visited: false, pre: null, child_ids:[2]},
+    {id: 2, reflexive: true, visited: false, pre: null, child_ids:[]}
   ],
   lastNodeId = 2,
   links = [
-    {source: nodes[0], target: nodes[1], left: true, right: true, flow: Math.round(9 * Math.random()) }, //TODO: 0 to 9 inclusive?
-    {source: nodes[1], target: nodes[2], left: true, right: true, flow: Math.round(9 * Math.random()) }
+    {source: nodes[0], target: nodes[1], left: true, right: true, capacity: Math.round(9 * Math.random()) }, //TODO: 0 to 9 inclusive?
+    {source: nodes[1], target: nodes[2], left: true, right: true, capacity: Math.round(9 * Math.random()) }
   ];
 
   // init D3 force layout
@@ -213,7 +213,7 @@ $(function(){
         })[0];
 
         if(!link) {
-          link = {source: source, target: target, left: true, right: true, flow: Math.round(10 * Math.random())};
+          link = {source: source, target: target, left: true, right: true, capacity: Math.round(10 * Math.random())};
           links.push(link);
         }
 
@@ -318,64 +318,64 @@ $(function(){
         selected_node = null;
         restart();
         break;
-      // When numeric values are entered, set the flow
+      // When numeric values are entered, set the capacity
       case 48: // 0
         if(selected_link) {
-          selected_link.flow = 0;
+          selected_link.capacity = 0;
         }
         restart();
         break;
       case 49: // 1
         if(selected_link) {
-          selected_link.flow = 1;
+          selected_link.capacity = 1;
         }
         restart();
         break;
       case 50: // 2
         if(selected_link) {
-          selected_link.flow = 2;
+          selected_link.capacity = 2;
         }
         restart();
         break;
       case 51: // 3
         if(selected_link) {
-          selected_link.flow = 3;
+          selected_link.capacity = 3;
         }
         restart();
         break;
       case 52: // 4
         if(selected_link) {
-          selected_link.flow = 4;
+          selected_link.capacity = 4;
         }
         restart();
         break;
       case 53: // 5
         if(selected_link) {
-          selected_link.flow = 5;
+          selected_link.capacity = 5;
         }
         restart();
         break;
       case 54: // 6
         if(selected_link) {
-          selected_link.flow = 6;
+          selected_link.capacity = 6;
         }
         restart();
         break;
         case 55: // 7
         if(selected_link) {
-          selected_link.flow = 7;
+          selected_link.capacity = 7;
         }
         restart();
         break;
       case 56: // 8
         if(selected_link) {
-          selected_link.flow = 8;
+          selected_link.capacity = 8;
         }
         restart();
         break;
       case 57: // 9
         if(selected_link) {
-          selected_link.flow = 9;
+          selected_link.capacity = 9;
         }
         restart();
         break;
@@ -394,18 +394,67 @@ $(function(){
     }
   }
 
-  NS.serialize = function serialize() {
-    $.ajax({
-      type: "POST",
-      url: "/serialize",
-      data: {
-        nodes: nodes,
-        links: links
+  function bfs(nodes, links, source, sink) {
+    for (var i = 0; i < nodes.length; i++) {
+      nodes[i].visited = false;
+      nodes[i].pre = null;
+    }
+    source.visited = true;
+    Q = [source];
+    done = false;
+
+    while(Q.length > 0 && done == false) {
+      u = Q.shift();
+      outgoing_links = [];
+      for (var i = 0; i < links.length; i ++) {
+        if (links[i].source == u && links[i].capacity > 0 && links[i].target.visited == false) {
+          v = links[i].target;
+          v.visited = true;
+          v.pre = u;
+          Q.push(v);
+          if (v == sink) {
+            done = true;
+          }
+        }
       }
-    });
+    }
+    
+    done = false;
+    path = [];
+    min_capacity = 999;
+    head = sink;
+    while(done == false) {
+      tail = head.pre;
+      for (var i = 0; i < links.length; i ++) {
+        if (links[i].source == tail && links[i].target == head) {
+          path.push(links[i]);
+          if (links[i].capacity < min_capacity) {
+            min_capacity = links[i].capacity;
+          }
+        }
+      }
+      head = tail;
+      if (head == source) {
+        done = true;
+      }
+    }
+
+    return {
+      path: path.reverse(),
+      capacity: min_capacity
+    };
+  }
+
+  function start() {
+    //path = bfs(nodes, links, nodes[0], nodes[2]);
+    //console.log(path[capacity]);
   }
 
   // app starts here
+  $('button').click(function() { 
+    start(); 
+  });
+
   svg.on('mousedown', mousedown)
     .on('mousemove', mousemove)
     .on('mouseup', mouseup);
