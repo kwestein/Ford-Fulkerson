@@ -23,13 +23,12 @@ $(function(){
   ],
   lastNodeId = 2,
   links = [
-    {source: nodes[0], target: nodes[1], left: false, right: true, capacity: Math.round(9 * Math.random()), flow: 0 }, //TODO: 0 to 9 inclusive?
-    {source: nodes[1], target: nodes[2], left: false, right: true, capacity: Math.round(9 * Math.random()), flow: 0 }
+    {source: nodes[0], target: nodes[1], left: false, right: true, capacity_forward: Math.round(9 * Math.random()), capacity_backward: 0, inOnFlowPath: false }, //TODO: 0 to 9 inclusive?
+    {source: nodes[1], target: nodes[2], left: false, right: true, capacity_forward: Math.round(9 * Math.random()), capacity_backward: 0, isOnFlowPath: false }
   ];
   flow_path = [];
   source = nodes[0];
   sink = nodes[2];
-  complete = false;
   max_flow = 0;
 
   // init D3 force layout
@@ -118,7 +117,7 @@ $(function(){
     path.classed('selected', function(d) { return d === selected_link; })
       .style('marker-start', function(d) { return d.left ? 'url(#start-arrow)' : ''; })
       .style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; })
-      .style('stroke', function(d) { return d.flow > 0 ? colors(4) : colors(1); });
+      .style('stroke', function(d) { return d.isOnFlowPath ? 'red' : 'black'; });
 
 
     // add new links
@@ -211,7 +210,7 @@ $(function(){
         })[0];
 
         if(!link) {
-          link = {source: source, target: target, left: false, right: true, flow: 0, capacity: Math.round(10 * Math.random())};
+          link = {source: source, target: target, left: false, right: true, capacity_forward: Math.round(10 * Math.random()), capacity_backward: 0};
           links.push(link);
         }
 
@@ -319,61 +318,61 @@ $(function(){
       // When numeric values are entered, set the capacity
       case 48: // 0
         if(selected_link) {
-          selected_link.capacity = 0;
+          selected_link.capacity_forward = 0;
         }
         restart();
         break;
       case 49: // 1
         if(selected_link) {
-          selected_link.capacity = 1;
+          selected_link.capacity_forward = 1;
         }
         restart();
         break;
       case 50: // 2
         if(selected_link) {
-          selected_link.capacity = 2;
+          selected_link.capacity_forward = 2;
         }
         restart();
         break;
       case 51: // 3
         if(selected_link) {
-          selected_link.capacity = 3;
+          selected_link.capacity_forward = 3;
         }
         restart();
         break;
       case 52: // 4
         if(selected_link) {
-          selected_link.capacity = 4;
+          selected_link.capacity_forward = 4;
         }
         restart();
         break;
       case 53: // 5
         if(selected_link) {
-          selected_link.capacity = 5;
+          selected_link.capacity_forward = 5;
         }
         restart();
         break;
       case 54: // 6
         if(selected_link) {
-          selected_link.capacity = 6;
+          selected_link.capacity_forward = 6;
         }
         restart();
         break;
         case 55: // 7
         if(selected_link) {
-          selected_link.capacity = 7;
+          selected_link.capacity_forward = 7;
         }
         restart();
         break;
       case 56: // 8
         if(selected_link) {
-          selected_link.capacity = 8;
+          selected_link.capacity_forward = 8;
         }
         restart();
         break;
       case 57: // 9
         if(selected_link) {
-          selected_link.capacity = 9;
+          selected_link.capacity_forward = 9;
         }
         restart();
         break;
@@ -406,7 +405,7 @@ $(function(){
       u = Q.shift();
       outgoing_links = [];
       links.forEach(function(link) {
-        if (link.source == u && link.capacity > 0 && link.target.visited == false) {
+        if (link.source == u && link.capacity_forward > 0 && link.target.visited == false) {
           v = link.target;
           v.visited = true;
           v.pre = u;
@@ -427,8 +426,8 @@ $(function(){
         if (link.source == tail && link.target == head) {
           flow_path.push(link);
           
-          if (link.capacity < min_capacity) {
-            min_capacity = link.capacity;
+          if (link.capacity_forward < min_capacity) {
+            min_capacity = link.capacity_forward;
           }
         }
       });
@@ -441,8 +440,10 @@ $(function(){
     flow_path.forEach(incrementFlowDecrementCapacity);
 
     function incrementFlowDecrementCapacity(link) {
-      link.flow += min_capacity;
-      link.capacity -= min_capacity;
+      link.capacity_backward += min_capacity;
+      link.capacity_forward -= min_capacity;
+      link.isOnFlowPath = true;
+      link.left = true;
     }
 
     if (min_capacity != 999) max_flow += min_capacity;
@@ -467,6 +468,7 @@ $(function(){
     if (sources.length != 1) {
       //TODO: multiple sources
       alert("There can only be exactly one source node");
+      return;
     } else {
       source = sources[0];
     }
@@ -474,6 +476,7 @@ $(function(){
     if (sinks.length != 1) {
       //TODO multiple sinks
       alert("There can only be exactly one sink node");
+      return;
     } else {
       sink = sinks[0];
     }
@@ -485,26 +488,25 @@ $(function(){
   }
 
   function step() {
-    if (complete == false)
-    { 
-      if (flow_path.length == 0) {
-        alert("Done! Maximum flow is " + max_flow);
-        complete = true;
-      }
-
-      flow_path.forEach(function(link) {
-        link.flow = 0;
-      });
-      flow_path = [];
-      restart();
-
-      sleep(500);
-
-      bfs();
-      restart();
-
-      setTimeout(step, 500);
+    if (flow_path.length == 0) {
+      if (window.confirm("Done! Maximum flow is " + max_flow)) {
+        location.reload();
+      };
     }
+
+    flow_path.forEach(function(link) {
+      link.isOnFlowPath = false;
+    });
+    flow_path = [];
+    restart();
+
+    sleep(500);
+
+    bfs();
+    restart();
+
+    setTimeout(step, 500);
+
   }
 
   function sleep(milliseconds) {
