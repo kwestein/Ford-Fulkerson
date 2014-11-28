@@ -528,6 +528,7 @@ $(function(){
 
   $('.set-button').click(function() { 
     step_interval = $('#delay-text-box').val();
+    $('.delay-val').text(step_interval);
   });
 
   svg.on('mousedown', mousedown)
