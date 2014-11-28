@@ -30,6 +30,7 @@ $(function(){
   source = nodes[0];
   sink = nodes[2];
   max_flow = 0;
+  step_interval = 500;
 
   // init D3 force layout
   var force = d3.layout.force()
@@ -290,92 +291,94 @@ $(function(){
   var lastKeyDown = -1;
 
   function keydown() {
-    d3.event.preventDefault();
+    if (d3.event.target.id != "delay-text-box") {
+      d3.event.preventDefault();
 
-    if(lastKeyDown !== -1) return;
-    lastKeyDown = d3.event.keyCode;
+      if(lastKeyDown !== -1) return;
+      lastKeyDown = d3.event.keyCode;
 
-    // ctrl
-    if(d3.event.keyCode === 17) {
-      circle.call(force.drag);
-      svg.classed('ctrl', true);
-    }
+      // ctrl
+      if(d3.event.keyCode === 17) {
+        circle.call(force.drag);
+        svg.classed('ctrl', true);
+      }
 
-    if(!selected_node && !selected_link) return;
-    switch(d3.event.keyCode) {
-      case 8: // backspace
-      case 46: // delete
-        if(selected_node) {
-          nodes.splice(nodes.indexOf(selected_node), 1);
-          spliceLinksForNode(selected_node);
-        } else if(selected_link) {
-          links.splice(links.indexOf(selected_link), 1);
-        }
-        selected_link = null;
-        selected_node = null;
-        restart();
-        break;
-      // When numeric values are entered, set the capacity
-      case 48: // 0
-        if(selected_link) {
-          selected_link.capacity_forward = 0;
-        }
-        restart();
-        break;
-      case 49: // 1
-        if(selected_link) {
-          selected_link.capacity_forward = 1;
-        }
-        restart();
-        break;
-      case 50: // 2
-        if(selected_link) {
-          selected_link.capacity_forward = 2;
-        }
-        restart();
-        break;
-      case 51: // 3
-        if(selected_link) {
-          selected_link.capacity_forward = 3;
-        }
-        restart();
-        break;
-      case 52: // 4
-        if(selected_link) {
-          selected_link.capacity_forward = 4;
-        }
-        restart();
-        break;
-      case 53: // 5
-        if(selected_link) {
-          selected_link.capacity_forward = 5;
-        }
-        restart();
-        break;
-      case 54: // 6
-        if(selected_link) {
-          selected_link.capacity_forward = 6;
-        }
-        restart();
-        break;
-        case 55: // 7
-        if(selected_link) {
-          selected_link.capacity_forward = 7;
-        }
-        restart();
-        break;
-      case 56: // 8
-        if(selected_link) {
-          selected_link.capacity_forward = 8;
-        }
-        restart();
-        break;
-      case 57: // 9
-        if(selected_link) {
-          selected_link.capacity_forward = 9;
-        }
-        restart();
-        break;
+      if(!selected_node && !selected_link) return;
+      switch(d3.event.keyCode) {
+        case 8: // backspace
+        case 46: // delete
+          if(selected_node) {
+            nodes.splice(nodes.indexOf(selected_node), 1);
+            spliceLinksForNode(selected_node);
+          } else if(selected_link) {
+            links.splice(links.indexOf(selected_link), 1);
+          }
+          selected_link = null;
+          selected_node = null;
+          restart();
+          break;
+        // When numeric values are entered, set the capacity
+        case 48: // 0
+          if(selected_link) {
+            selected_link.capacity_forward = 0;
+          }
+          restart();
+          break;
+        case 49: // 1
+          if(selected_link) {
+            selected_link.capacity_forward = 1;
+          }
+          restart();
+          break;
+        case 50: // 2
+          if(selected_link) {
+            selected_link.capacity_forward = 2;
+          }
+          restart();
+          break;
+        case 51: // 3
+          if(selected_link) {
+            selected_link.capacity_forward = 3;
+          }
+          restart();
+          break;
+        case 52: // 4
+          if(selected_link) {
+            selected_link.capacity_forward = 4;
+          }
+          restart();
+          break;
+        case 53: // 5
+          if(selected_link) {
+            selected_link.capacity_forward = 5;
+          }
+          restart();
+          break;
+        case 54: // 6
+          if(selected_link) {
+            selected_link.capacity_forward = 6;
+          }
+          restart();
+          break;
+          case 55: // 7
+          if(selected_link) {
+            selected_link.capacity_forward = 7;
+          }
+          restart();
+          break;
+        case 56: // 8
+          if(selected_link) {
+            selected_link.capacity_forward = 8;
+          }
+          restart();
+          break;
+        case 57: // 9
+          if(selected_link) {
+            selected_link.capacity_forward = 9;
+          }
+          restart();
+          break;
+      }
     }
   }
 
@@ -443,7 +446,6 @@ $(function(){
       link.capacity_backward += min_capacity;
       link.capacity_forward -= min_capacity;
       link.isOnFlowPath = true;
-      link.left = true;
     }
 
     if (min_capacity != 999) max_flow += min_capacity;
@@ -484,7 +486,7 @@ $(function(){
     bfs();
     restart();
 
-    setTimeout(step, 500);
+    setTimeout(step, step_interval);
   }
 
   function step() {
@@ -496,16 +498,17 @@ $(function(){
 
     flow_path.forEach(function(link) {
       link.isOnFlowPath = false;
+      link.left = true;
     });
     flow_path = [];
     restart();
 
-    sleep(500);
+    sleep(step_interval);
 
     bfs();
     restart();
 
-    setTimeout(step, 500);
+    setTimeout(step, step_interval);
 
   }
 
@@ -519,8 +522,12 @@ $(function(){
   }
 
   // app starts here
-  $('button').click(function() { 
+  $('.start-button').click(function() { 
     start(); 
+  });
+
+  $('.set-button').click(function() { 
+    step_interval = $('#delay-text-box').val();
   });
 
   svg.on('mousedown', mousedown)
