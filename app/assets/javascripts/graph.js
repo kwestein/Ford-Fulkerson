@@ -23,14 +23,15 @@ $(function(){
   ],
   lastNodeId = 2,
   links = [
-    {source: nodes[0], target: nodes[1], left: false, right: true, capacity_forward: Math.round(9 * Math.random()), capacity_backward: 0, inOnFlowPath: false }, //TODO: 0 to 9 inclusive?
-    {source: nodes[1], target: nodes[2], left: false, right: true, capacity_forward: Math.round(9 * Math.random()), capacity_backward: 0, isOnFlowPath: false }
+    {source: nodes[0], target: nodes[1], left: false, right: true, capacity_forward: Math.round(999 * Math.random()), capacity_backward: 0, inOnFlowPath: false }, 
+    {source: nodes[1], target: nodes[2], left: false, right: true, capacity_forward: Math.round(999 * Math.random()), capacity_backward: 0, isOnFlowPath: false }
   ];
   flow_path = [];
   source = nodes[0];
   sink = nodes[2];
   max_flow = 0;
   step_interval = 500;
+  entered_flow_val = "";
 
   // init D3 force layout
   var force = d3.layout.force()
@@ -211,7 +212,7 @@ $(function(){
         })[0];
 
         if(!link) {
-          link = {source: source, target: target, left: false, right: true, capacity_forward: Math.round(10 * Math.random()), capacity_backward: 0};
+          link = {source: source, target: target, left: false, right: true, capacity_forward: Math.round(999 * Math.random()), capacity_backward: 0};
           links.push(link);
         }
 
@@ -304,8 +305,14 @@ $(function(){
       }
 
       if(!selected_node && !selected_link) return;
+
       switch(d3.event.keyCode) {
-        case 8: // backspace
+        case 13: // return
+          selected_link.capacity_forward = parseInt(entered_flow_val.substring(0,3));
+          entered_flow_val = "";
+          //restart();
+          break;
+        case 8:
         case 46: // delete
           if(selected_node) {
             nodes.splice(nodes.indexOf(selected_node), 1);
@@ -320,63 +327,53 @@ $(function(){
         // When numeric values are entered, set the capacity
         case 48: // 0
           if(selected_link) {
-            selected_link.capacity_forward = 0;
+            entered_flow_val += "0";
           }
-          restart();
           break;
         case 49: // 1
           if(selected_link) {
-            selected_link.capacity_forward = 1;
+            entered_flow_val += "1";
           }
-          restart();
           break;
         case 50: // 2
           if(selected_link) {
-            selected_link.capacity_forward = 2;
+            entered_flow_val += "2";
           }
-          restart();
           break;
         case 51: // 3
           if(selected_link) {
-            selected_link.capacity_forward = 3;
+            entered_flow_val += "3";
           }
-          restart();
           break;
         case 52: // 4
           if(selected_link) {
-            selected_link.capacity_forward = 4;
+            entered_flow_val += "4";
           }
-          restart();
           break;
         case 53: // 5
           if(selected_link) {
-            selected_link.capacity_forward = 5;
+            entered_flow_val += "5";
           }
-          restart();
           break;
         case 54: // 6
           if(selected_link) {
-            selected_link.capacity_forward = 6;
+            entered_flow_val += "6";
           }
-          restart();
           break;
           case 55: // 7
           if(selected_link) {
-            selected_link.capacity_forward = 7;
+            entered_flow_val += "7";
           }
-          restart();
           break;
         case 56: // 8
           if(selected_link) {
-            selected_link.capacity_forward = 8;
+            entered_flow_val += "8";
           }
-          restart();
           break;
         case 57: // 9
           if(selected_link) {
-            selected_link.capacity_forward = 9;
+            entered_flow_val += "9";
           }
-          restart();
           break;
       }
     }
