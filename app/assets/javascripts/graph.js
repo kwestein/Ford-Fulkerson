@@ -17,15 +17,20 @@ $(function(){
   //  - reflexive edges are indicated on the node (as a bold black circle).
   //  - links are always source < target; edge directions are set by 'left' and 'right'.
   var nodes = [
-    {id: 0, reflexive: true, visited: false, pre: null, child_ids:[1]},
-    {id: 1, reflexive: true, visited: false, pre: null, child_ids:[2]},
-    {id: 2, reflexive: true, visited: false, pre: null, child_ids:[]}
+    {id: 0, reflexive: true, visited: false, pre: null},
+    {id: 1, reflexive: true, visited: false, pre: null},
+    {id: 2, reflexive: true, visited: false, pre: null}
   ],
   lastNodeId = 2,
   links = [
-    {source: nodes[0], target: nodes[1], left: true, right: true, capacity: Math.round(9 * Math.random()) }, //TODO: 0 to 9 inclusive?
-    {source: nodes[1], target: nodes[2], left: true, right: true, capacity: Math.round(9 * Math.random()) }
+    {source: nodes[0], target: nodes[1], left: false, right: true, capacity: Math.round(9 * Math.random()), flow: 0 }, //TODO: 0 to 9 inclusive?
+    {source: nodes[1], target: nodes[2], left: false, right: true, capacity: Math.round(9 * Math.random()), flow: 0 }
   ];
+  flow_path = [];
+  source = nodes[0];
+  sink = nodes[2];
+  complete = false;
+  max_flow = 0;
 
   // init D3 force layout
   var force = d3.layout.force()
@@ -112,7 +117,8 @@ $(function(){
     // update existing links
     path.classed('selected', function(d) { return d === selected_link; })
       .style('marker-start', function(d) { return d.left ? 'url(#start-arrow)' : ''; })
-      .style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; });
+      .style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; })
+      .style('stroke', function(d) { return d.flow > 0 ? colors(4) : colors(1); });
 
 
     // add new links
@@ -197,23 +203,15 @@ $(function(){
         d3.select(this).attr('transform', '');
 
         // add link to graph (update if exists)
-        // NB: links are strictly source < target; arrows separately specified by booleans
-        var source, target;
-        if(mousedown_node.id < mouseup_node.id) {
-          source = mousedown_node;
-          target = mouseup_node;
-        } else {
-          source = mouseup_node;
-          target = mousedown_node;
-        }
-
+        source = mousedown_node;
+        target = mouseup_node;
         var link;
         link = links.filter(function(l) {
           return (l.source === source && l.target === target);
         })[0];
 
         if(!link) {
-          link = {source: source, target: target, left: true, right: true, capacity: Math.round(10 * Math.random())};
+          link = {source: source, target: target, left: false, right: true, flow: 0, capacity: Math.round(10 * Math.random())};
           links.push(link);
         }
 
@@ -248,7 +246,7 @@ $(function(){
 
     // insert new node at point
     var point = d3.mouse(this),
-        node = {id: ++lastNodeId, reflexive: false};
+        node = {id: ++lastNodeId, reflexive: false, visited: false, pre: null};
     node.x = point[0];
     node.y = point[1];
     nodes.push(node);
@@ -394,11 +392,12 @@ $(function(){
     }
   }
 
-  function bfs(nodes, links, source, sink) {
-    for (var i = 0; i < nodes.length; i++) {
-      nodes[i].visited = false;
-      nodes[i].pre = null;
-    }
+  function bfs() {
+    nodes.forEach(function(node) {
+      node.visited = false;
+      node.pre = null;
+    });
+
     source.visited = true;
     Q = [source];
     done = false;
@@ -406,9 +405,9 @@ $(function(){
     while(Q.length > 0 && done == false) {
       u = Q.shift();
       outgoing_links = [];
-      for (var i = 0; i < links.length; i ++) {
-        if (links[i].source == u && links[i].capacity > 0 && links[i].target.visited == false) {
-          v = links[i].target;
+      links.forEach(function(link) {
+        if (link.source == u && link.capacity > 0 && link.target.visited == false) {
+          v = link.target;
           v.visited = true;
           v.pre = u;
           Q.push(v);
@@ -416,38 +415,105 @@ $(function(){
             done = true;
           }
         }
-      }
+      });
     }
     
     done = false;
-    path = [];
     min_capacity = 999;
     head = sink;
-    while(done == false) {
+    while(done == false && head != null) {
       tail = head.pre;
-      for (var i = 0; i < links.length; i ++) {
-        if (links[i].source == tail && links[i].target == head) {
-          path.push(links[i]);
-          if (links[i].capacity < min_capacity) {
-            min_capacity = links[i].capacity;
+      links.forEach(function(link) {
+        if (link.source == tail && link.target == head) {
+          flow_path.push(link);
+          
+          if (link.capacity < min_capacity) {
+            min_capacity = link.capacity;
           }
         }
-      }
+      });
       head = tail;
       if (head == source) {
         done = true;
       }
     }
 
-    return {
-      path: path.reverse(),
-      capacity: min_capacity
-    };
+    flow_path.forEach(incrementFlowDecrementCapacity);
+
+    function incrementFlowDecrementCapacity(link) {
+      link.flow += min_capacity;
+      link.capacity -= min_capacity;
+    }
+
+    if (min_capacity != 999) max_flow += min_capacity;
+    flow_path.reverse();
+    return min_capacity;
   }
 
   function start() {
-    //path = bfs(nodes, links, nodes[0], nodes[2]);
-    //console.log(path[capacity]);
+    sources = [];
+    sinks = [];
+    nodes.forEach(function(node) {
+      isSource = true;
+      isSink = true;
+      links.forEach(function(link) {
+        if (link.source == node) isSink = false;
+        if (link.target == node) isSource = false;
+      });
+      if (isSource) sources.push(node);
+      else if (isSink) sinks.push(node);
+    });
+
+    if (sources.length != 1) {
+      //TODO: multiple sources
+      alert("There can only be exactly one source node");
+    } else {
+      source = sources[0];
+    }
+
+    if (sinks.length != 1) {
+      //TODO multiple sinks
+      alert("There can only be exactly one sink node");
+    } else {
+      sink = sinks[0];
+    }
+
+    bfs();
+    restart();
+
+    setTimeout(step, 500);
+  }
+
+  function step() {
+    if (complete == false)
+    { 
+      if (flow_path.length == 0) {
+        alert("Done! Maximum flow is " + max_flow);
+        complete = true;
+      }
+
+      flow_path.forEach(function(link) {
+        link.flow = 0;
+      });
+      flow_path = [];
+      restart();
+
+      sleep(500);
+
+      bfs();
+      restart();
+
+      setTimeout(step, 500);
+    }
+  }
+
+  function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+      if ((new Date().getTime() - start) > milliseconds){
+        break;
+      }
+    }
   }
 
   // app starts here
