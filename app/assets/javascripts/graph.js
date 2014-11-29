@@ -496,6 +496,9 @@ $(function(){
     flow_path.forEach(function(link) {
       link.isOnFlowPath = false;
       link.left = true;
+      if (link.capacity_forward == 0) {
+        link.right = false;
+      }
     });
     flow_path = [];
     restart();
