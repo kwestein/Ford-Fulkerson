@@ -21,15 +21,15 @@ $(function(){
   ],
   lastNodeId = 2,
   links = [
-    {source: nodes[0], target: nodes[1], left: false, right: true, capacity_forward: Math.round(29 * Math.random()), capacity_backward: 0, inOnFlowPath: false }, 
-    {source: nodes[1], target: nodes[2], left: false, right: true, capacity_forward: Math.round(29 * Math.random()), capacity_backward: 0, isOnFlowPath: false }
+    {source: nodes[0], target: nodes[1], left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, inOnFlowPath: false }, 
+    {source: nodes[1], target: nodes[2], left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, isOnFlowPath: false }
   ];
   flow_path = [];
   source = nodes[0];
   sink = nodes[2];
   max_flow = 0;
   step_interval = 500;
-  entered_flow_val = "";
+  entered_capacity_val = "";
 
   // init D3 force layout
   var force = d3.layout.force()
@@ -131,11 +131,27 @@ $(function(){
         .style("text-anchor", "start")
         .attr('startOffset', '0%')
         .attr("class", function(d, i) {
-          return "flow_forward_" + i;
+          return "capacity_forward_" + i;
         })
         .text(function(d) {
           return d.capacity_forward;
         });
+
+    path.enter().append('text')
+      .style('font-size', "16px")
+      .attr("dy", "-8px")
+      .attr("dx", "10px")
+      .append('textPath')
+        .attr('xlink:href', function(d, i) {
+          d.identifier = i;
+          return "#linkId_" + i;
+        })
+        .style("text-anchor", "middle")
+        .attr('startOffset', '50%')
+        .attr("class", function(d, i) {
+          return "flow_" + i;
+        })
+        .text("");
 
     path.enter().append('text')
       .style('font-size', "16px")
@@ -149,7 +165,7 @@ $(function(){
         .style("text-anchor", "end")
         .attr('startOffset', '100%')
         .attr("class", function(d, i) {
-          return "flow_backward_" + i;
+          return "capacity_backward_" + i;
         })
         .text(function(d) {
           return d.capacity_backward;
@@ -248,7 +264,7 @@ $(function(){
         })[0];
 
         if(!link) {
-          link = {source: source, target: target, left: false, right: true, capacity_forward: Math.round(29 * Math.random()), capacity_backward: 0};
+          link = {source: source, target: target, left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, isOnFlowPath: false};
           links.push(link);
         }
 
@@ -344,9 +360,11 @@ $(function(){
 
       switch(d3.event.keyCode) {
         case 13: // return
-          selected_link.capacity_forward = parseInt(entered_flow_val.substring(0,3));
-          entered_flow_val = "";
-          //restart();
+          selected_link.capacity_forward = entered_capacity_val.length > 0 ? parseInt(entered_capacity_val) : selected_link.capacity_forward;
+          entered_capacity_val = "";
+          d3.select(".capacity_forward_" + selected_link.identifier).text(selected_link.capacity_forward);
+          selected_link = null;
+          restart();
           break;
         case 8:
         case 46: // delete
@@ -362,56 +380,43 @@ $(function(){
           break;
         // When numeric values are entered, set the capacity
         case 48: // 0
-          if(selected_link) {
-            entered_flow_val += "0";
-          }
+          updateCapacityVal("0");
           break;
         case 49: // 1
-          if(selected_link) {
-            entered_flow_val += "1";
-          }
+          updateCapacityVal("1");
           break;
         case 50: // 2
-          if(selected_link) {
-            entered_flow_val += "2";
-          }
+          updateCapacityVal("2");
           break;
         case 51: // 3
-          if(selected_link) {
-            entered_flow_val += "3";
-          }
+          updateCapacityVal("3");
           break;
         case 52: // 4
-          if(selected_link) {
-            entered_flow_val += "4";
-          }
+          updateCapacityVal("4");
           break;
         case 53: // 5
-          if(selected_link) {
-            entered_flow_val += "5";
-          }
+          updateCapacityVal("5");
           break;
         case 54: // 6
-          if(selected_link) {
-            entered_flow_val += "6";
-          }
+          updateCapacityVal("6");
           break;
-          case 55: // 7
-          if(selected_link) {
-            entered_flow_val += "7";
-          }
+        case 55: // 7
+          updateCapacityVal("7");
           break;
         case 56: // 8
-          if(selected_link) {
-            entered_flow_val += "8";
-          }
+          updateCapacityVal("8");
           break;
         case 57: // 9
-          if(selected_link) {
-            entered_flow_val += "9";
-          }
+          updateCapacityVal("9");
           break;
       }
+    }
+  }
+
+  function updateCapacityVal(i) {
+    if(selected_link && entered_capacity_val.length < 2) {
+      entered_capacity_val += i;
+      d3.select(".capacity_forward_" + selected_link.identifier).text(entered_capacity_val);
     }
   }
 
@@ -477,10 +482,12 @@ $(function(){
 
     function incrementFlowDecrementCapacity(link) {
       link.capacity_backward += min_capacity;
-      d3.select(".flow_backward_" + link.identifier).text(link.capacity_backward);
       link.capacity_forward -= min_capacity;
-      d3.select(".flow_forward_" + link.identifier).text(link.capacity_forward);
       link.isOnFlowPath = true;
+
+      d3.select(".capacity_forward_" + link.identifier).text("");
+      d3.select(".capacity_backward_" + link.identifier).text("");
+      d3.select(".flow_" + link.identifier).text(min_capacity);
     }
 
     if (min_capacity != 999) max_flow += min_capacity;
@@ -526,12 +533,17 @@ $(function(){
 
   function step() {
     if (flow_path.length == 0) {
+      sleep(step_interval);
       if (window.confirm("Done! Maximum flow is " + max_flow)) {
         location.reload();
       };
     }
 
     flow_path.forEach(function(link) {
+      d3.select(".capacity_forward_" + link.identifier).text(link.capacity_forward);
+      d3.select(".capacity_backward_" + link.identifier).text(link.capacity_backward);
+      d3.select(".flow_" + link.identifier).text("");
+      $('.flow-val').text(max_flow);
       link.isOnFlowPath = false;
       link.left = true;
       if (link.capacity_forward == 0) {
