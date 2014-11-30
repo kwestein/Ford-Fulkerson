@@ -1,4 +1,13 @@
-svg {
+.network {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+}
+
+#graph {
   background-color: #FFF;
   cursor: default;
   -webkit-user-select: none;
@@ -6,6 +15,10 @@ svg {
   -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
+  display: inline-block;
+  position: absolute;
+  top: 10px;
+  left: 0;
 }
 
 svg:not(.active):not(.ctrl) {

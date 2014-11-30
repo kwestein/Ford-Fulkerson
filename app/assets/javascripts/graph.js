@@ -1,14 +1,15 @@
 $(function(){
 
   // set up SVG for D3
-  var width  = 800,
-      height = 400,
+  var width  = 1024,
+      height = 500,
       colors = d3.scale.category10();
 
   var svg = d3.select('.network')
       .append('svg')
-      .attr('width', width)
-      .attr('height', height);
+      .attr('id', 'graph')
+      .attr("preserveAspectRatio", "xMinYMin meet")
+      .attr("viewBox", "200 50 600 400");
 
   // set up initial nodes and links
   //  - nodes are known by 'id', not by index in array.
