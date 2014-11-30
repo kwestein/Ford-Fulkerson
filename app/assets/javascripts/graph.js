@@ -1,13 +1,14 @@
 $(function(){
 
   // set up SVG for D3
-  var width  = 700,
-      height = 300,
+  var width  = 800,
+      height = 400,
       colors = d3.scale.category10();
 
   var svg = d3.select('.network')
       .append('svg')
-      .attr('width', '100%')
+      .attr('id', 'graph')
+      .attr('width', width)
       .attr('height', height);
 
   // set up initial nodes and links
@@ -21,8 +22,8 @@ $(function(){
   ],
   lastNodeId = 2,
   links = [
-    {source: nodes[0], target: nodes[1], left: false, right: true, capacity_forward: Math.round(999 * Math.random()), capacity_backward: 0, inOnFlowPath: false }, 
-    {source: nodes[1], target: nodes[2], left: false, right: true, capacity_forward: Math.round(999 * Math.random()), capacity_backward: 0, isOnFlowPath: false }
+    {source: nodes[0], target: nodes[1], left: false, right: true, capacity_forward: Math.round(29 * Math.random()), capacity_backward: 0, inOnFlowPath: false }, 
+    {source: nodes[1], target: nodes[2], left: false, right: true, capacity_forward: Math.round(29 * Math.random()), capacity_backward: 0, isOnFlowPath: false }
   ];
   flow_path = [];
   source = nodes[0];
@@ -45,8 +46,8 @@ $(function(){
       .attr('id', 'end-arrow')
       .attr('viewBox', '0 -5 10 10')
       .attr('refX', 6)
-      .attr('markerWidth', 3)
-      .attr('markerHeight', 3)
+      .attr('markerWidth', 4)
+      .attr('markerHeight', 4)
       .attr('orient', 'auto')
     .append('svg:path')
       .attr('d', 'M0,-5L10,0L0,5')
@@ -56,8 +57,8 @@ $(function(){
       .attr('id', 'start-arrow')
       .attr('viewBox', '0 -5 10 10')
       .attr('refX', 4)
-      .attr('markerWidth', 3)
-      .attr('markerHeight', 3)
+      .attr('markerWidth', 4)
+      .attr('markerHeight', 4)
       .attr('orient', 'auto')
     .append('svg:path')
       .attr('d', 'M10,-5L0,0L10,5')
@@ -121,17 +122,30 @@ $(function(){
 
     path.enter().append('text')
       .style('font-size', "16px")
-      .attr("dy", "-5px")
+      .attr("dy", "-8px")
       .attr("dx", "5px")
-      .attr("text-anchor", "start")
       .append('textPath')
         .attr('xlink:href', function(d, i) {
-          // return '#' + ++id_val;
           return "#linkId_" + i;
         })
-        .attr('startoffset', '50%')
+        .style("text-anchor", "start")
+        .attr('startOffset', '0%')
         .text(function(d) {
           return d.capacity_forward;
+        });
+
+    path.enter().append('text')
+      .style('font-size', "16px")
+      .attr("dy", "-8px")
+      .attr("dx", "-16px")
+      .append('textPath')
+        .attr('xlink:href', function(d, i) {
+          return "#linkId_" + i;
+        })
+        .style("text-anchor", "end")
+        .attr('startOffset', '100%')
+        .text(function(d) {
+          return d.capacity_backward;
         });
 
     // add new links
@@ -227,7 +241,7 @@ $(function(){
         })[0];
 
         if(!link) {
-          link = {source: source, target: target, left: false, right: true, capacity_forward: Math.round(999 * Math.random()), capacity_backward: 0};
+          link = {source: source, target: target, left: false, right: true, capacity_forward: Math.round(29 * Math.random()), capacity_backward: 0};
           links.push(link);
         }
 
