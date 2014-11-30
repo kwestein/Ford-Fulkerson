@@ -2,7 +2,7 @@
     display: inline-block;
     position: relative;
     width: 100%;
-    padding-bottom: 100%; /* aspect ratio */
+    padding-bottom: 70%; /* aspect ratio */
     vertical-align: top;
     overflow: hidden;
 }
@@ -67,3 +67,14 @@ text.id {
   text-anchor: middle;
   font-weight: bold;
 }
+
+@media all and (min-width: 50px)   {  body  { font-size:0.05em;  } }
+@media all and (min-width: 100px)  {  body  { font-size:0.1em;  } }
+@media all and (min-width: 200px)  {  body  { font-size:0.2em;  } }
+@media all and (min-width: 300px)  {  body  { font-size:0.3em;  } }
+@media all and (min-width: 400px)  {  body  { font-size:0.4em;  } }
+@media all and (min-width: 500px)  {  body  { font-size:0.5em;  } }
+@media all and (min-width: 600px)  {  body  { font-size:0.6em;  } }
+@media all and (min-width: 700px)  {  body  { font-size:0.7em;  } }
+@media all and (min-width: 800px)  {  body  { font-size:0.8em;  } }
+@media all and (min-width: 900px)  {  body  { font-size:0.9em;  } }
