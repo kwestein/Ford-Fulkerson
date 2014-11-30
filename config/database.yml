@@ -1,17 +1,17 @@
 development:
-  adapter: mysql
+  adapter: sqlite3
   database: ford_development
   username: root
   password:
   host: localhost
 test:
-  adapter: mysql
+  adapter: sqlite3
   database: ford_test
   username: root
   password:
   host: localhost
 production:
-  adapter: mysql
+  adapter: sqlite3
   database: ford_production
   username: root
   password: 
