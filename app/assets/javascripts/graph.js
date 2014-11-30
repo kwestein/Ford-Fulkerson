@@ -1,5 +1,3 @@
-var NS = {};
-
 $(function(){
 
   // set up SVG for D3
@@ -121,13 +119,31 @@ $(function(){
       .style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; })
       .style('stroke', function(d) { return d.isOnFlowPath ? 'red' : 'black'; });
 
+    path.enter().append('text')
+      .style('font-size', "16px")
+      .attr("dy", "-5px")
+      .attr("dx", "5px")
+      .attr("text-anchor", "start")
+      .append('textPath')
+        .attr('xlink:href', function(d, i) {
+          // return '#' + ++id_val;
+          return "#linkId_" + i;
+        })
+        .attr('startoffset', '50%')
+        .text(function(d) {
+          return d.capacity_forward;
+        });
 
     // add new links
-    path.enter().append('svg:path')
+    path.enter().append('path')
       .attr('class', 'link')
       .classed('selected', function(d) { return d === selected_link; })
       .style('marker-start', function(d) { return d.left ? 'url(#start-arrow)' : ''; })
       .style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; })
+      .attr('id', function(d, i) {
+        // return ++id_val;
+        return "linkId_" + i;
+      })
       .on('mousedown', function(d) {
         if(d3.event.ctrlKey) return;
 
@@ -141,7 +157,6 @@ $(function(){
 
     // remove old links
     path.exit().remove();
-
 
     // circle (node) group
     // NB: the function arg is crucial here! nodes are known by id, not by index!
