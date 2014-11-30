@@ -7,7 +7,6 @@ $(function(){
 
   var svg = d3.select('.network')
       .append('svg')
-      .attr('id', 'graph')
       .attr('width', width)
       .attr('height', height);
 
@@ -126,10 +125,14 @@ $(function(){
       .attr("dx", "5px")
       .append('textPath')
         .attr('xlink:href', function(d, i) {
+          d.identifier = i;
           return "#linkId_" + i;
         })
         .style("text-anchor", "start")
         .attr('startOffset', '0%')
+        .attr("class", function(d, i) {
+          return "flow_forward_" + i;
+        })
         .text(function(d) {
           return d.capacity_forward;
         });
@@ -140,10 +143,14 @@ $(function(){
       .attr("dx", "-16px")
       .append('textPath')
         .attr('xlink:href', function(d, i) {
+          d.identifier = i;
           return "#linkId_" + i;
         })
         .style("text-anchor", "end")
         .attr('startOffset', '100%')
+        .attr("class", function(d, i) {
+          return "flow_backward_" + i;
+        })
         .text(function(d) {
           return d.capacity_backward;
         });
@@ -470,7 +477,9 @@ $(function(){
 
     function incrementFlowDecrementCapacity(link) {
       link.capacity_backward += min_capacity;
+      d3.select(".flow_backward_" + link.identifier).text(link.capacity_backward);
       link.capacity_forward -= min_capacity;
+      d3.select(".flow_forward_" + link.identifier).text(link.capacity_forward);
       link.isOnFlowPath = true;
     }
 
