@@ -279,7 +279,7 @@ $(function(){
         source = mousedown_node;
         target = mouseup_node;
 
-        backwardsLinkExists = false;
+        backwardLinkExists = false;
 
         links.forEach(function(link) {
           if (link.target == source && link.source == target)
@@ -401,6 +401,8 @@ $(function(){
             spliceLinksForNode(selected_node);
           } else if(selected_link) {
             links.splice(links.indexOf(selected_link), 1);
+            d3.select(".capacity_forward_" + selected_link.identifier).text("");
+            d3.select(".capacity_backward_" + selected_link.identifier).text("");
           }
           selected_link = null;
           selected_node = null;
