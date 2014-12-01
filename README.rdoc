@@ -1,5 +1,0 @@
-This is a visulization of the Ford-Fulkerson Algorithm for finding the maximum flow and minimum cut in a network.
-
-For more information on the algorithm: http://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm
-
-Using the great graph visulization resource from here: https://gist.github.com/rkirsling/5001347
