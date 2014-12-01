@@ -278,12 +278,20 @@ $(function(){
         // add link to graph (update if exists)
         source = mousedown_node;
         target = mouseup_node;
+
+        backwardsLinkExists = false;
+
+        links.forEach(function(link) {
+          if (link.target == source && link.source == target)
+            backwardLinkExists = true;
+        });
+
         var link;
         link = links.filter(function(l) {
           return (l.source === source && l.target === target);
         })[0];
 
-        if(!link) {
+        if(!link && !backwardLinkExists) {
           link = {source: source, target: target, left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, isOnFlowPath: false};
           links.push(link);
         }
