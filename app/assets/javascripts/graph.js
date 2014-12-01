@@ -140,7 +140,7 @@ $(function(){
       .style('stroke', function(d) { return d.isOnFlowPath ? 'red' : 'black'; });
 
     path.enter().append('text')
-      .style('font-size', "16px")
+      .style('font-size', "12px")
       .attr("dy", "-8px")
       .attr("dx", "5px")
       .append('textPath')
@@ -158,7 +158,7 @@ $(function(){
         });
 
     path.enter().append('text')
-      .style('font-size', "16px")
+      .style('font-size', "12px")
       .attr("dy", "-8px")
       .attr("dx", "10px")
       .append('textPath')
@@ -174,7 +174,7 @@ $(function(){
         .text("");
 
     path.enter().append('text')
-      .style('font-size', "16px")
+      .style('font-size', "12px")
       .attr("dy", "-8px")
       .attr("dx", "-16px")
       .append('textPath')
