@@ -68,6 +68,54 @@ text.id {
   font-weight: bold;
 }
 
+body {
+  margin:0% 8%;
+}
+
+.background {
+  background-color:#D8D8D8; padding: 3% 0%; 
+}
+
+.centered {
+  text-align:center;
+}
+
+h2 {
+  margin-top: 10px; 
+  font-family: Helvetica Neue, Helvetica, sans-serif; 
+  font-size:2.5em; 
+  font-weight: 300; 
+  letter-spacing: -2px; 
+  margin-bottom: 5px;
+}
+
+img {
+  height: 0.8em;
+}
+
+.padded {
+  padding:0% 10%;
+}
+
+.right {
+  font-weight: bold; 
+  float: right; 
+}
+
+.total-flow {
+  display: block; 
+  vertical-align: middle;
+}
+
+.flow-val {
+  font-weight: 300; 
+  font-size: 3.0em; 
+}
+
+.start-button {
+  margin-bottom:10px;
+}
+
 @media all and (min-width: 50px)   {  body  { font-size:0.05em;  } }
 @media all and (min-width: 100px)  {  body  { font-size:0.1em;  } }
 @media all and (min-width: 200px)  {  body  { font-size:0.2em;  } }
