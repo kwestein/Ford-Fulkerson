@@ -536,6 +536,7 @@ $(function(){
       d3.select(".capacity_backward_" + link.identifier).text(link.capacity_backward);
       d3.select(".flow_" + link.identifier).text("");
       $('.flow-val').text(max_flow);
+      d3.select('.flow-display').style("border", "1px double red");
       link.isOnFlowPath = false;
       link.left = true;
       if (link.capacity_forward == 0) {
