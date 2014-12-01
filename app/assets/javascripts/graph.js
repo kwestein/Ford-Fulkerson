@@ -1,14 +1,33 @@
 $(function(){
 
+  $('a').webuiPopover({
+    title: '<b>Instructions</b>',
+    content:function(d) {
+      return "<p><a href=\"http://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm\">Click here for more information on the algorithm.</a></p>" +
+        "<ul>" +
+        "<li>Click in the open space to <strong>add a node</strong>, drag from one node to another to <strong>add an edge</strong></li>" +
+        "<li>Ctrl-drag a node to <strong>move the graph</strong> layout</li>" +
+        "<li>Click a node or an edge to <strong>select it</strong></li>" +
+        "<li>When a node is selected: Delete <strong>removes the node</strong></li>" +
+        "<li>When an edge is selected: Delete <strong>removes the edge</strong></li>" +
+        "<li>Each arc is automatically assigned a random number between 1 and 99 as a maximum flow value</li>" +
+        "<li>To assign an arc a new max flow value, select it, <strong>type the flow (1-99)</strong>, then press enter</li>" +
+        "</ul>"
+    },
+    width:600
+  });
+
   // set up SVG for D3
   var width  = 1024,
-      height = 500,
+      height = 400,
       colors = d3.scale.category10();
 
   var svg = d3.select('.network')
       .append('svg')
       .attr('id', 'graph')
-      .attr("preserveAspectRatio", "xMinYMin meet")
+      .attr("preserveAspectRatio", "xMidYMid meet")
+      // .attr("width", width)
+      // .attr("height", height)
       .attr("viewBox", "200 50 600 400");
 
   // set up initial nodes and links
@@ -359,16 +378,16 @@ $(function(){
 
       if(!selected_node && !selected_link) return;
 
-      switch(d3.event.keyCode) {
-        case 13: // return
+      var keyCode = d3.event.keyCode;
+
+      if (keyCode == 139) { // return
           selected_link.capacity_forward = entered_capacity_val.length > 0 ? parseInt(entered_capacity_val) : selected_link.capacity_forward;
           entered_capacity_val = "";
           d3.select(".capacity_forward_" + selected_link.identifier).text(selected_link.capacity_forward);
           selected_link = null;
           restart();
-          break;
-        case 8:
-        case 46: // delete
+      }
+      else if (keyCode == 8 || keyCode == 46) { // delete
           if(selected_node) {
             nodes.splice(nodes.indexOf(selected_node), 1);
             spliceLinksForNode(selected_node);
@@ -378,38 +397,10 @@ $(function(){
           selected_link = null;
           selected_node = null;
           restart();
-          break;
-        // When numeric values are entered, set the capacity
-        case 48: // 0
-          updateCapacityVal("0");
-          break;
-        case 49: // 1
-          updateCapacityVal("1");
-          break;
-        case 50: // 2
-          updateCapacityVal("2");
-          break;
-        case 51: // 3
-          updateCapacityVal("3");
-          break;
-        case 52: // 4
-          updateCapacityVal("4");
-          break;
-        case 53: // 5
-          updateCapacityVal("5");
-          break;
-        case 54: // 6
-          updateCapacityVal("6");
-          break;
-        case 55: // 7
-          updateCapacityVal("7");
-          break;
-        case 56: // 8
-          updateCapacityVal("8");
-          break;
-        case 57: // 9
-          updateCapacityVal("9");
-          break;
+      }
+      // When numeric values are entered, set the capacity
+      else if (keyCode > 47 && keyCode < 58) {
+        updateCapacityVal(keyCode - 48);
       }
     }
   }

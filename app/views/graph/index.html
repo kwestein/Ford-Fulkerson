@@ -3,32 +3,25 @@
 <title>Directed Graph Editor</title>
 </head>
 
-<body style="margin:0% 10%;">
-  <div style="background-color:#D8D8D8; padding:3% 10%">
+<body style="margin:0% 8%;">
+  <div style="background-color:#D8D8D8; padding: 3% 0%; ">
     <div style="text-align:center;">
-      <h2 style="font-family: Helvetica Neue, Helvetica, sans-serif; font-size:2.5em; font-weight: 300;letter-spacing: -2px;">Ford-Fulkerson Max Flow/Min Cut Algorithm</h2>
-      <p><a href="http://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm">More info</a></p>
+      <h2 style="margin-top: 10px; font-family: Helvetica Neue, Helvetica, sans-serif; font-size:2.5em; font-weight: 300; letter-spacing: -2px;">
+        Ford-Fulkerson Max Flow/Min Cut Algorithm <a href="http://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm"><img src="/assets/information.png" style="height: 0.8em;" /></a>
+      </h2>
+    </div>
+    <div style="padding:0% 10%;">
+      <div style="font-weight: bold; float: right; text-align: right;">
+        Total Flow: <span style="font-weight: normal; border-style: double; border-width: 2px;" class="flow-val">0</span><br />
+        <button type="button" class="start-button" style="margin-bottom:10px;">Start</button>
+      </div>
       <div>Delay (ms): <span class="delay-val">500</span>
         <form id="myform">
           <input type="number" id="delay-text-box"/>
           <input type="button" class="set-button" value="Set"/>
         </form> 
       </div>
-      <p><button type="button" class="start-button" style="margin-bottom:10px;">Start</button></p>
-    </div>
-     <div>Total Flow: <span class="flow-val">0</span>
-    <div style="padding:0% 10%;">
       <div class="network"></div>
-      <h4>Instructions:</h4>
-      <ul>
-        <li>Click in the open space to <strong>add a node</strong>, drag from one node to another to <strong>add an edge</strong></li>
-        <li>Ctrl-drag a node to <strong>move the graph</strong> layout</li>
-        <li>Click a node or an edge to <strong>select it</strong></li>
-        <li>When a node is selected: Delete <strong>removes the node</strong></li>
-        <li>When an edge is selected: Delete <strong>removes the edge</strong></li>
-        <li>Each arc is automatically assigned a random number between 1 and 99 as a maximum flow value</li>
-        <li>To assign an arc a new max flow value, select it, <strong>type the flow (1-99)</strong>, then press enter</li>
-      </ul>
     </div>
   </div>
 </body>
