@@ -108,6 +108,13 @@ $(function(){
 
   // update force layout (called automatically each iteration)
   function tick() {
+    circle.attr('transform', function(d) {
+      d.y = Math.min(320, Math.max(70, d.y));
+      d.x = Math.min(780, Math.max(215, d.x));
+
+      return 'translate(' + d.x + ',' + d.y + ')';
+    });
+
     // draw directed edges with proper padding from node centers
     path.attr('d', function(d) {
       var deltaX = d.target.x - d.source.x,
@@ -122,10 +129,6 @@ $(function(){
           targetX = d.target.x - (targetPadding * normX),
           targetY = d.target.y - (targetPadding * normY);
       return 'M' + sourceX + ',' + sourceY + 'L' + targetX + ',' + targetY;
-    });
-
-    circle.attr('transform', function(d) {
-      return 'translate(' + d.x + ',' + d.y + ')';
     });
   }
 
@@ -279,8 +282,7 @@ $(function(){
         backwardLinkExists = false;
 
         links.forEach(function(link) {
-          if (link.target == source && link.source == target)
-            backwardLinkExists = true;
+          if (link.target == source && link.source == target) backwardLinkExists = true;
         });
 
         var link;
@@ -314,13 +316,14 @@ $(function(){
   }
 
   function mousedown() {
-    // prevent I-bar on drag
-    //d3.event.preventDefault();
-    
-    // because :active only works in WebKit?
     svg.classed('active', true);
 
     if(d3.event.ctrlKey || mousedown_node || mousedown_link) return;
+
+    if (nodes.length == 10){
+      alert("The graph can have a maximum of 10 nodes");
+      return; 
+    } 
 
     // insert new node at point
     var point = d3.mouse(this),
