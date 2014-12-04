@@ -145,14 +145,12 @@ $(function(){
       .attr("dy", "-8px")
       .attr("dx", "5px")
       .append('textPath')
-        .attr('xlink:href', function(d, i) {
-          //d.id = i;
+        .attr('xlink:href', function(d) {
           return "#linkId_" + d.id;
         })
         .style("text-anchor", "start")
         .attr('startOffset', '0%')
-        .attr("class", function(d, i) {
-          console.log("CF: ID: "+d.id+", i: "+i);
+        .attr("class", function(d) {
           return "capacity_forward_" + d.id;
         })
         .text(function(d) {
@@ -164,14 +162,12 @@ $(function(){
       .attr("dy", "-8px")
       .attr("dx", "10px")
       .append('textPath')
-        .attr('xlink:href', function(d, i) {
-          //d.id = i;
+        .attr('xlink:href', function(d) {
           return "#linkId_" + d.id;
         })
         .style("text-anchor", "middle")
         .attr('startOffset', '50%')
-        .attr("class", function(d, i) {
-          console.log("Flow: ID: "+d.id+", i: "+i);
+        .attr("class", function(d) {
           return "flow_" + d.id;
         })
         .text("");
@@ -181,14 +177,12 @@ $(function(){
       .attr("dy", "-8px")
       .attr("dx", "-16px")
       .append('textPath')
-        .attr('xlink:href', function(d, i) {
-          //d.id = i;
+        .attr('xlink:href', function(d) {
           return "#linkId_" + d.id;
         })
         .style("text-anchor", "end")
         .attr('startOffset', '100%')
-        .attr("class", function(d, i) {
-          console.log("CB: ID: "+d.id+", i: "+i);
+        .attr("class", function(d) {
           return "capacity_backward_" + d.id;
         })
         .text(function(d) {
@@ -201,9 +195,8 @@ $(function(){
       .classed('selected', function(d) { return d === selected_link; })
       .style('marker-start', function(d) { return d.left ? 'url(#start-arrow)' : ''; })
       .style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; })
-      .attr('id', function(d, i) {
-        // return ++id_val;
-        return "linkId_" + i;
+      .attr('id', function(d) {
+        return "linkId_" + d.id;
       })
       .on('mousedown', function(d) {
         if(d3.event.ctrlKey) return;
