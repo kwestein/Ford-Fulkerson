@@ -41,9 +41,10 @@ $(function(){
   ],
   lastNodeId = 2,
   links = [
-    {source: nodes[0], target: nodes[1], left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, inOnFlowPath: false }, 
-    {source: nodes[1], target: nodes[2], left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, isOnFlowPath: false }
-  ];
+    {id: 0, source: nodes[0], target: nodes[1], left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, inOnFlowPath: false }, 
+    {id: 1, source: nodes[1], target: nodes[2], left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, isOnFlowPath: false }
+  ],
+  lastLinkId = 1;
   flow_path = [];
   source = nodes[0];
   sink = nodes[2];
@@ -145,13 +146,14 @@ $(function(){
       .attr("dx", "5px")
       .append('textPath')
         .attr('xlink:href', function(d, i) {
-          d.identifier = i;
-          return "#linkId_" + i;
+          //d.id = i;
+          return "#linkId_" + d.id;
         })
         .style("text-anchor", "start")
         .attr('startOffset', '0%')
         .attr("class", function(d, i) {
-          return "capacity_forward_" + i;
+          console.log("CF: ID: "+d.id+", i: "+i);
+          return "capacity_forward_" + d.id;
         })
         .text(function(d) {
           return d.capacity_forward;
@@ -163,13 +165,14 @@ $(function(){
       .attr("dx", "10px")
       .append('textPath')
         .attr('xlink:href', function(d, i) {
-          d.identifier = i;
-          return "#linkId_" + i;
+          //d.id = i;
+          return "#linkId_" + d.id;
         })
         .style("text-anchor", "middle")
         .attr('startOffset', '50%')
         .attr("class", function(d, i) {
-          return "flow_" + i;
+          console.log("Flow: ID: "+d.id+", i: "+i);
+          return "flow_" + d.id;
         })
         .text("");
 
@@ -179,13 +182,14 @@ $(function(){
       .attr("dx", "-16px")
       .append('textPath')
         .attr('xlink:href', function(d, i) {
-          d.identifier = i;
-          return "#linkId_" + i;
+          //d.id = i;
+          return "#linkId_" + d.id;
         })
         .style("text-anchor", "end")
         .attr('startOffset', '100%')
         .attr("class", function(d, i) {
-          return "capacity_backward_" + i;
+          console.log("CB: ID: "+d.id+", i: "+i);
+          return "capacity_backward_" + d.id;
         })
         .text(function(d) {
           return d.capacity_backward;
@@ -292,7 +296,7 @@ $(function(){
         })[0];
 
         if(!link && !backwardLinkExists) {
-          link = {source: source, target: target, left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, isOnFlowPath: false};
+          link = {id: ++lastLinkId, source: source, target: target, left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, isOnFlowPath: false};
           links.push(link);
         }
 
@@ -388,10 +392,10 @@ $(function(){
 
       var keyCode = d3.event.keyCode;
 
-      if (keyCode == 139) { // return
+      if (keyCode == 13) { // return
           selected_link.capacity_forward = entered_capacity_val.length > 0 ? parseInt(entered_capacity_val) : selected_link.capacity_forward;
           entered_capacity_val = "";
-          d3.select(".capacity_forward_" + selected_link.identifier).text(selected_link.capacity_forward);
+          d3.select(".capacity_forward_" + selected_link.id).text(selected_link.capacity_forward);
           selected_link = null;
           restart();
       }
@@ -400,9 +404,9 @@ $(function(){
             nodes.splice(nodes.indexOf(selected_node), 1);
             spliceLinksForNode(selected_node);
           } else if(selected_link) {
+            d3.select(".capacity_forward_" + selected_link.id).text("");
+            d3.select(".capacity_backward_" + selected_link.id).text("");
             links.splice(links.indexOf(selected_link), 1);
-            d3.select(".capacity_forward_" + selected_link.identifier).text("");
-            d3.select(".capacity_backward_" + selected_link.identifier).text("");
           }
           selected_link = null;
           selected_node = null;
@@ -418,7 +422,7 @@ $(function(){
   function updateCapacityVal(i) {
     if(selected_link && entered_capacity_val.length < 2) {
       entered_capacity_val += i;
-      d3.select(".capacity_forward_" + selected_link.identifier).text(entered_capacity_val);
+      d3.select(".capacity_forward_" + selected_link.id).text(entered_capacity_val);
     }
   }
 
@@ -487,9 +491,9 @@ $(function(){
       link.capacity_forward -= min_capacity;
       link.isOnFlowPath = true;
 
-      d3.select(".capacity_forward_" + link.identifier).text("");
-      d3.select(".capacity_backward_" + link.identifier).text("");
-      d3.select(".flow_" + link.identifier).text(min_capacity);
+      d3.select(".capacity_forward_" + link.id).text("");
+      d3.select(".capacity_backward_" + link.id).text("");
+      d3.select(".flow_" + link.id).text(min_capacity);
     }
 
     if (min_capacity != 999) max_flow += min_capacity;
@@ -542,9 +546,9 @@ $(function(){
     }
 
     flow_path.forEach(function(link) {
-      d3.select(".capacity_forward_" + link.identifier).text(link.capacity_forward);
-      d3.select(".capacity_backward_" + link.identifier).text(link.capacity_backward);
-      d3.select(".flow_" + link.identifier).text("");
+      d3.select(".capacity_forward_" + link.id).text(link.capacity_forward);
+      d3.select(".capacity_backward_" + link.id).text(link.capacity_backward);
+      d3.select(".flow_" + link.id).text("");
       $('.flow-val').text(max_flow);
       d3.select('.flow-display').style("border", "1px double red");
       link.isOnFlowPath = false;
