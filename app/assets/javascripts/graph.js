@@ -26,9 +26,11 @@ $(function(){
       .append('svg')
       .attr('id', 'graph')
       .attr("preserveAspectRatio", "xMidYMid meet")
-      // .attr("width", width)
-      // .attr("height", height)
       .attr("viewBox", "200 50 600 400");
+
+  function generateID() {
+    return Math.round(1 + 999999 * Math.random())
+  }
 
   // set up initial nodes and links
   //  - nodes are known by 'id', not by index in array.
@@ -41,8 +43,8 @@ $(function(){
   ],
   lastNodeId = 2,
   links = [
-    {id: 0, source: nodes[0], target: nodes[1], left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, inOnFlowPath: false }, 
-    {id: 1, source: nodes[1], target: nodes[2], left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, isOnFlowPath: false }
+    {id: generateID(), source: nodes[0], target: nodes[1], left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, inOnFlowPath: false }, 
+    {id: generateID(), source: nodes[1], target: nodes[2], left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, isOnFlowPath: false }
   ],
   lastLinkId = 1;
   flow_path = [];
@@ -116,7 +118,7 @@ $(function(){
     });
 
     // draw directed edges with proper padding from node centers
-    path.attr('d', function(d) {
+    path.select('path').attr('d', function(d) {
       var deltaX = d.target.x - d.source.x,
           deltaY = d.target.y - d.source.y,
           dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
@@ -135,19 +137,22 @@ $(function(){
   // update graph (called when needed)
   function restart() {
     // path (link) group
-    path = path.data(links);
+    path = path.data(links, function(d) { return d.id; });
 
     // update existing links
-    path.classed('selected', function(d) { return d === selected_link; })
+    path.select('path')
       .style('marker-start', function(d) { return d.left ? 'url(#start-arrow)' : ''; })
       .style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; })
-      .style('stroke', function(d) { return d.isOnFlowPath ? 'red' : 'black'; });
+      .style('stroke', function(d) { return d.isOnFlowPath ? 'red' : 'black'; })
+      .classed('selected', function(d) { return d === selected_link; });
 
-    path.enter().append('text')
+    var linkGroups = path.enter().append('svg:g');
+
+    linkGroups.append('svg:text')
       .style('font-size', "12px")
       .attr("dy", "-8px")
       .attr("dx", "5px")
-      .append('textPath')
+      .append('svg:textPath')
         .attr('xlink:href', function(d) {
           return "#linkId_" + d.id;
         })
@@ -160,11 +165,11 @@ $(function(){
           return d.capacity_forward;
         });
 
-    path.enter().append('text')
+    linkGroups.append('svg:text')
       .style('font-size', "12px")
       .attr("dy", "-8px")
       .attr("dx", "10px")
-      .append('textPath')
+      .append('svg:textPath')
         .attr('xlink:href', function(d) {
           return "#linkId_" + d.id;
         })
@@ -175,11 +180,11 @@ $(function(){
         })
         .text("");
 
-    path.enter().append('text')
+    linkGroups.append('svg:text')
       .style('font-size', "12px")
       .attr("dy", "-8px")
       .attr("dx", "-16px")
-      .append('textPath')
+      .append('svg:textPath')
         .attr('xlink:href', function(d) {
           return "#linkId_" + d.id;
         })
@@ -193,7 +198,7 @@ $(function(){
         });
 
     // add new links
-    path.enter().append('path')
+    linkGroups.append('svg:path')
       .attr('class', 'link')
       .classed('selected', function(d) { return d === selected_link; })
       .style('marker-start', function(d) { return d.left ? 'url(#start-arrow)' : ''; })
@@ -206,8 +211,12 @@ $(function(){
 
         // select link
         mousedown_link = d;
-        if(mousedown_link === selected_link) selected_link = null;
-        else selected_link = mousedown_link;
+        if(mousedown_link === selected_link) {
+          selected_link = null;
+        } else {
+          selected_link = mousedown_link;
+          entered_capacity_val = "";
+        }
         selected_node = null;
         restart();
       });
@@ -291,12 +300,13 @@ $(function(){
         })[0];
 
         if(!link && !backwardLinkExists) {
-          link = {id: ++lastLinkId, source: source, target: target, left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, isOnFlowPath: false};
+          link = {id: generateID(), source: source, target: target, left: false, right: true, capacity_forward: Math.round(1 + 99 * Math.random()), capacity_backward: 0, isOnFlowPath: false};
           links.push(link);
         }
 
         // select new link
         selected_link = link;
+        entered_capacity_val = "";
         selected_node = null;
         restart();
       });
@@ -396,12 +406,11 @@ $(function(){
           restart();
       }
       else if (keyCode == 8 || keyCode == 46) { // delete
-          if(selected_node) {
+          if (selected_node) {
             nodes.splice(nodes.indexOf(selected_node), 1);
             spliceLinksForNode(selected_node);
-          } else if(selected_link) {
-            d3.select(".capacity_forward_" + selected_link.id).text("");
-            d3.select(".capacity_backward_" + selected_link.id).text("");
+          } 
+          else if (selected_link) {
             links.splice(links.indexOf(selected_link), 1);
           }
           selected_link = null;
@@ -419,6 +428,7 @@ $(function(){
     if(selected_link && entered_capacity_val.length < 2) {
       entered_capacity_val += i;
       d3.select(".capacity_forward_" + selected_link.id).text(entered_capacity_val);
+      selected_link.capacity_forward = parseInt(entered_capacity_val);
     }
   }
 
